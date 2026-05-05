@@ -22,7 +22,8 @@ app.use(limiter);
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'http://localhost:3001'
+    'http://localhost:3001',
+    process.env.FRONTEND_URL  // Add this
   ],
   credentials: true
 }));

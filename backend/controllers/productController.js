@@ -6,6 +6,14 @@ const User = require('../models/User');
 // @access  Public
 const getProducts = async (req, res) => {
   try {
+    // Check if database is connected
+    if (require('mongoose').connection.readyState !== 1) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database is not connected. Please try again later.'
+      });
+    }
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
     const skip = (page - 1) * limit;

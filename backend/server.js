@@ -35,14 +35,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // ================= DATABASE =================
+let dbConnected = false;
+
 mongoose.connect(
   process.env.MONGODB_URI || 'mongodb://localhost:27017/farmdirect'
 )
 .then(() => {
-  console.log('Connected to MongoDB');
+  dbConnected = true;
+  console.log('✅ Connected to MongoDB');
 })
 .catch((err) => {
-  console.log('MongoDB Error:', err);
+  dbConnected = false;
+  console.error('❌ MongoDB Error:', err.message);
+  console.error('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET - using localhost fallback');
 });
 
 // ================= ROUTES =================
@@ -58,6 +63,16 @@ app.use('/api/setup', require('./routes/setup')); // ← ADD THIS LINE
 // ================= HOME ROUTE =================
 app.get('/', (req, res) => {
   res.send('FarmDirect API Running...');
+});
+
+// ================= HEALTH CHECK ROUTE =================
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'FarmDirect API is running',
+    database: dbConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // ================= ERROR HANDLER =================

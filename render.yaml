@@ -6,6 +6,3 @@ services:
     routes:
       - path: /*
         destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://farmdirect-backend.onrender.com/api

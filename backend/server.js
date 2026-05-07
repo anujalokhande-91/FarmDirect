@@ -19,12 +19,14 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ================= CORS FIXED =================
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    process.env.FRONTEND_URL  // Add this
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 

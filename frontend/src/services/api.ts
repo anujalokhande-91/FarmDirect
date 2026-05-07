@@ -1,4 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '/api';
+// Log resolved API base so we can verify at runtime which URL the frontend will call
+console.log('Resolved API_BASE_URL:', API_BASE_URL);
 
 class ApiService {
   private getAuthHeaders(): Record<string, string> {
@@ -20,10 +22,25 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+
+      // Try to parse JSON; if response isn't JSON, read text for better error messages
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch (parseErr) {
+        const text = await response.text();
+        const msg = `Non-JSON response (status ${response.status}) from ${url}: ${text}`;
+        console.error(msg);
+        if (!response.ok) {
+          throw new Error(msg);
+        }
+        // If response was OK but not JSON, return the raw text
+        return text as unknown as T;
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'API request failed');
+        const errMsg = data?.message || `API request failed with status ${response.status}`;
+        throw new Error(errMsg);
       }
 
       return data;

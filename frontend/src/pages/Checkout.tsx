@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 // ── Generate a random UPI QR code URL using a free QR API ──
 const generateUpiQR = (amount: number, name: string) => {
   const upiId = 'farmdirect@upi';
-  const upiString = `upi://pay?pa=${upiId}&pn=FarmDirect&am=${amount}&cu=INR&tn=FarmDirect Order`;
+  const upiString = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name || 'FarmDirect')}&am=${amount}&cu=INR&tn=FarmDirect Order`;
   return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
 };
 

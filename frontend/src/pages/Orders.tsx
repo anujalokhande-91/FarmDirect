@@ -176,7 +176,7 @@ const Orders = () => {
     return map[status] || 'background:#f3f4f6;color:#374151';
   };
 
-  const formatDate = (dateString: string) =>
+  const formatDate = (dateString: string | Date) =>
     new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit'

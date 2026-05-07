@@ -1,4 +1,10 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '/api';
+// Resolve and normalize API base URL.
+// If VITE_API_URL is not provided (dev/proxy), default to '/api'.
+let API_BASE_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '/api';
+// Ensure production URL includes the '/api' prefix expected by the backend routes.
+if (API_BASE_URL !== '/api' && !API_BASE_URL.endsWith('/api')) {
+  API_BASE_URL = API_BASE_URL + '/api';
+}
 // Log resolved API base so we can verify at runtime which URL the frontend will call
 console.log('Resolved API_BASE_URL:', API_BASE_URL);
 

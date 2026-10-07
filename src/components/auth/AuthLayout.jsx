@@ -1,0 +1,10 @@
+import { Leaf } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+export function AuthLayout({ eyebrow, title, description, children }) {
+  return <section className="container-page grid min-h-[calc(100vh-76px)] items-center gap-10 py-10 md:grid-cols-[.8fr_1fr] md:py-16"><div className="hidden min-h-[560px] overflow-hidden bg-leaf p-10 text-oat md:flex md:flex-col md:justify-between"><div><Link to="/" className="inline-flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-oat text-leaf"><Leaf size={20} /></span><span className="text-lg font-extrabold tracking-[-0.04em]">farmdirect</span></Link><p className="mt-16 text-xs font-bold uppercase tracking-[0.18em] text-herb">Grown close. Shared with care.</p><h2 className="serif mt-5 max-w-sm text-6xl leading-[.95]">Good food starts with good people.</h2></div><p className="max-w-sm text-sm leading-6 text-oat/65">Join a community built around fresh harvests, local farmers, and food worth knowing.</p></div><div className="mx-auto w-full max-w-lg"><div className="mb-8 md:hidden"><Link to="/" className="inline-flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-leaf text-oat"><Leaf size={20} /></span><span className="text-lg font-extrabold tracking-[-0.04em]">farm<span className="text-herb">direct</span></span></Link></div><p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-clay">{eyebrow}</p><h1 className="serif text-5xl leading-none text-ink md:text-6xl">{title}</h1><p className="mt-4 max-w-md leading-7 text-ink/60">{description}</p><div className="mt-8 bg-white p-6 shadow-soft md:p-8">{children}</div></div></section>
+}
+
+export function AuthField({ label, error, ...props }) {
+  return <label className="block text-sm font-bold text-ink">{label}<input className={`mt-2 min-h-12 w-full border bg-oat px-4 font-normal outline-none transition placeholder:text-ink/35 focus:border-leaf ${error ? 'border-clay' : 'border-line'}`} {...props} />{error && <span className="mt-2 block text-xs font-medium text-clay">{error}</span>}</label>
+}

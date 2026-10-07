@@ -1,0 +1,30 @@
+import { ArrowLeft, Eye, EyeOff, UserPlus } from 'lucide-react'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useFarmerAuth } from '../app/FarmerAuthContext'
+import { FarmerAuthLayout, FarmerField } from '../components/farmer/FarmerAuthLayout'
+
+export default function FarmerRegister() {
+  const { farmerRegister } = useFarmerAuth()
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', phone: '', farmName: '', farmLocation: '', state: '', district: '', farmingType: 'Organic', mainProducts: '', password: '', confirmPassword: '', terms: false })
+  const [errors, setErrors] = useState({})
+  const update = (field) => (event) => setForm({ ...form, [field]: event.target.type === 'checkbox' ? event.target.checked : event.target.value })
+  const submit = (event) => {
+    event.preventDefault()
+    const nextErrors = {}
+    const required = ['name', 'email', 'phone', 'farmName', 'farmLocation', 'state', 'district', 'mainProducts', 'password', 'confirmPassword']
+    required.forEach((field) => { if (!form[field].trim()) nextErrors[field] = 'This field is required.' })
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) nextErrors.email = 'Enter a valid email address.'
+    if (form.phone && !/^[+\d][\d\s().-]{7,}$/.test(form.phone)) nextErrors.phone = 'Enter a valid phone number.'
+    if (form.password && form.password.length < 8) nextErrors.password = 'Password must be at least 8 characters.'
+    if (form.confirmPassword !== form.password) nextErrors.confirmPassword = 'Passwords must match.'
+    if (!form.terms) nextErrors.terms = 'Please accept the terms to continue.'
+    if (Object.keys(nextErrors).length) return setErrors(nextErrors)
+    farmerRegister({ ...form, name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim() })
+      .then(() => navigate('/farmer/login', { state: { registered: true } }))
+      .catch((error) => setErrors({ form: error.message }))
+  }
+  return <FarmerAuthLayout eyebrow="Farmer registration" title="Grow With Us" description="Create your farmer account and bring your harvest directly to local customers."><form className="space-y-5" onSubmit={submit} noValidate><div className="grid gap-5 sm:grid-cols-2"><FarmerField label="Farmer Full Name" type="text" autoComplete="name" placeholder="Your full name" value={form.name} error={errors.name} onChange={update('name')} /><FarmerField label="Email" type="email" autoComplete="email" placeholder="you@example.com" value={form.email} error={errors.email} onChange={update('email')} /><FarmerField label="Phone Number" type="tel" autoComplete="tel" placeholder="+1 (555) 000-0000" value={form.phone} error={errors.phone} onChange={update('phone')} /><FarmerField label="Farm Name" type="text" placeholder="Green Valley Farm" value={form.farmName} error={errors.farmName} onChange={update('farmName')} /></div><div className="grid gap-5 sm:grid-cols-2"><FarmerField label="Farm Location" type="text" placeholder="Hudson Valley" value={form.farmLocation} error={errors.farmLocation} onChange={update('farmLocation')} /><FarmerField label="State" type="text" placeholder="New York" value={form.state} error={errors.state} onChange={update('state')} /><FarmerField label="District" type="text" placeholder="Ulster County" value={form.district} error={errors.district} onChange={update('district')} /><label className="block text-sm font-bold text-ink">Farming Type<select className="mt-2 min-h-12 w-full border border-line bg-oat px-4 font-normal outline-none focus:border-leaf" value={form.farmingType} onChange={update('farmingType')}><option>Organic</option><option>Conventional</option><option>Mixed</option></select></label></div><FarmerField label="Main Products" type="text" placeholder="Vegetables, grains, dairy..." value={form.mainProducts} error={errors.mainProducts} onChange={update('mainProducts')} /><div className="grid gap-5 sm:grid-cols-2"><label className="block text-sm font-bold text-ink">Password<div className={`mt-2 flex min-h-12 items-center border bg-oat focus-within:border-leaf ${errors.password ? 'border-clay' : 'border-line'}`}><input className="min-w-0 flex-1 bg-transparent px-4 font-normal outline-none" type={showPassword ? 'text' : 'password'} autoComplete="new-password" placeholder="At least 8 characters" value={form.password} onChange={update('password')} /><button className="grid h-11 w-11 place-items-center text-ink/45 hover:text-leaf" type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>{errors.password && <span className="mt-2 block text-xs font-medium text-clay">{errors.password}</span>}</label><FarmerField label="Confirm Password" type="password" autoComplete="new-password" placeholder="Repeat your password" value={form.confirmPassword} error={errors.confirmPassword} onChange={update('confirmPassword')} /></div><label className="flex items-start gap-3 text-sm font-medium text-ink/65"><input className="mt-1" type="checkbox" checked={form.terms} onChange={update('terms')} /><span>I accept the FarmDirect farmer terms and community guidelines.</span></label>{errors.terms && <p className="text-xs font-medium text-clay">{errors.terms}</p>}{errors.form && <p className="bg-[#f8e8df] px-4 py-3 text-sm text-clay">{errors.form}</p>}<button className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-leaf text-sm font-bold text-white transition hover:bg-ink" type="submit"><UserPlus size={17} /> Create Farmer Account</button><p className="text-center text-sm text-ink/60">Already registered? <Link className="font-bold text-leaf hover:text-clay" to="/farmer/login">Farmer Login</Link></p><Link className="flex items-center justify-center gap-2 text-xs font-bold text-ink/45 hover:text-leaf" to="/login"><ArrowLeft size={14} /> Customer login</Link></form></FarmerAuthLayout>
+}

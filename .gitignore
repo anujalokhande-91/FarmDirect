@@ -1,0 +1,28 @@
+# Frontend
+node_modules/
+dist/
+build/
+
+# Environment variables - NEVER commit real secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python virtual environments
+.venv/
+.venv-1/
+backend/.venv/
+backend/venv/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

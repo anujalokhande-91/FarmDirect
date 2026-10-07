@@ -1,0 +1,22 @@
+import { ArrowLeft, LogOut, Mail, MapPin, Phone, ShoppingBag, UserRound } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../app/AuthContext'
+import { Button } from '../components/ui'
+import { listOrders } from '../api/orders'
+import { getApiErrorMessage } from '../api/api'
+import { useEffect, useState } from 'react'
+
+export default function Account() {
+  const { currentUser, logout } = useAuth()
+  const navigate = useNavigate()
+  const [orders, setOrders] = useState([])
+  const [orderState, setOrderState] = useState({ loading: true, error: '' })
+  useEffect(() => {
+    listOrders().then((data) => {
+      setOrders(data)
+      setOrderState({ loading: false, error: '' })
+    }).catch((error) => setOrderState({ loading: false, error: getApiErrorMessage(error, 'Orders could not be loaded.') }))
+  }, [])
+  const handleLogout = () => { logout(); navigate('/') }
+  return <section className="container-page py-12 md:py-20"><Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-ink/55 hover:text-leaf"><ArrowLeft size={16} /> Back to home</Link><div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-clay">Your FarmDirect account</p><h1 className="serif text-6xl leading-none">Hello, {currentUser.name.split(' ')[0]}.</h1><p className="mt-4 text-ink/60">Your local food journey, all in one place.</p></div><Button onClick={handleLogout} variant="secondary"><LogOut size={16} /> Logout</Button></div><div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr]"><section className="bg-white p-6 shadow-soft md:p-8"><div className="flex items-center gap-3 border-b border-line pb-5"><span className="grid h-11 w-11 place-items-center rounded-full bg-[#e8eee3] text-leaf"><UserRound size={20} /></span><div><h2 className="font-bold">Personal details</h2><p className="text-sm text-ink/50">Customer account</p></div></div><dl className="mt-6 space-y-5 text-sm"><div className="flex gap-3"><Mail className="shrink-0 text-clay" size={18} /><div><dt className="text-xs text-ink/45">Email</dt><dd className="mt-1 font-bold">{currentUser.email}</dd></div></div><div className="flex gap-3"><Phone className="shrink-0 text-clay" size={18} /><div><dt className="text-xs text-ink/45">Phone</dt><dd className="mt-1 font-bold">{currentUser.phone || 'Not provided'}</dd></div></div><div className="flex gap-3"><MapPin className="shrink-0 text-clay" size={18} /><div><dt className="text-xs text-ink/45">Account type</dt><dd className="mt-1 font-bold">{currentUser.role}</dd></div></div></dl></section><section className="bg-white p-6 shadow-soft md:p-8"><div className="flex items-center gap-3 border-b border-line pb-5"><span className="grid h-11 w-11 place-items-center rounded-full bg-[#e8eee3] text-leaf"><ShoppingBag size={20} /></span><div><h2 className="font-bold">My Orders</h2><p className="text-sm text-ink/50">Your recent FarmDirect purchases</p></div></div>{orderState.loading ? <p className="py-10 text-sm text-ink/55">Loading orders...</p> : orderState.error ? <p className="mt-6 rounded-xl bg-[#f8e8df] px-3 py-2 text-sm font-bold text-clay">{orderState.error}</p> : orders.length ? <div className="mt-6 space-y-4">{orders.map((order) => <article className="rounded-2xl border border-line p-4" key={order.id}><div className="flex flex-wrap justify-between gap-3"><p className="font-bold">Order #{order.id}</p><span className="rounded-full bg-oat px-3 py-1 text-xs font-bold uppercase">{order.status}</span></div><p className="mt-2 text-sm text-ink/55">{order.delivery_address}</p><div className="mt-4 space-y-2 text-sm">{order.items.map((item) => <div className="flex justify-between gap-3" key={item.id}><span>{item.product_id} × {item.quantity}</span><span className="font-bold">${Number(item.subtotal).toFixed(2)}</span></div>)}</div><p className="mt-4 border-t border-line pt-3 text-right font-bold">Total ${Number(order.total_amount).toFixed(2)}</p></article>)}</div> : <div className="grid min-h-56 place-items-center py-10 text-center"><div><p className="serif text-3xl text-ink">You haven't placed any orders yet.</p><p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-ink/55">When you find something good, your orders will appear here.</p><Link className="mt-5 inline-block text-sm font-bold text-leaf hover:text-clay" to="/products">Explore products</Link></div></div>}</section></div></section>
+}

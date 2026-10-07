@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color: #18332c; background: #f6f4ed; font-family: 'Manrope', Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, a, input, select { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #e7bc5b; outline-offset: 3px; }
+.container-page { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+.serif { font-family: 'DM Serif Display', Georgia, serif; }
+.reveal { animation: reveal .65s ease both; }
+.reveal-delay { animation: reveal .65s .12s ease both; }
+@keyframes reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 640px) { .container-page { width: min(100% - 28px, 1180px); } }
